@@ -51,7 +51,16 @@ class HashTable:
 
         Fill this in.
         '''
-        pass
+        idx = self._hash_mod(key)
+        pair = self.storage[idx]
+
+        # if there's a linked list insert at the end
+        if pair == None:
+            self.storage[idx] = LinkedPair(key, value)
+        else:
+            while pair.next != None:
+                pair = pair.next
+            pair.next = LinkedPair(key, value)
 
 
 
@@ -63,7 +72,28 @@ class HashTable:
 
         Fill this in.
         '''
-        pass
+        idx = self._hash_mod(key)
+        pair = self.storage[idx]
+
+        if self.retrieve(key) == None:
+            print("WARNING: key not found")
+        
+        # need to find the pair to be removed
+        # and remove it, potentially from a singly linked list
+
+        prev = None
+        curr = pair
+
+        while curr:
+            if curr.key == key:
+                if prev:
+                    prev.next = curr.next
+                else:
+                    self.storage[idx] = curr.next
+            
+            prev = curr
+            curr = curr.next
+            
 
 
     def retrieve(self, key):
@@ -74,7 +104,17 @@ class HashTable:
 
         Fill this in.
         '''
-        pass
+        idx = self._hash_mod(key)
+        pair = self.storage[idx]
+
+        # go to index, search through linked list for key
+        if pair.key == key:
+            return pair.value
+        while pair.next != None:
+            if pair.next.key == key:
+                return pair.next.value
+        return None
+
 
 
     def resize(self):
@@ -84,13 +124,24 @@ class HashTable:
 
         Fill this in.
         '''
-        pass
+        # increase capacity
+        self.capacity *= 2
+
+        # copy storage to a temp list, overwrite it
+        temp = self.storage
+        self.storage = [None] * self.capacity
+
+        # rehash key/value pairs
+        for i in temp:
+            while i != None:
+                self.insert(i.key, i.value)
+                i = i.next
 
 
 
 if __name__ == "__main__":
     ht = HashTable(2)
-
+    
     ht.insert("line_1", "Tiny hash table")
     ht.insert("line_2", "Filled beyond capacity")
     ht.insert("line_3", "Linked list saves the day!")
