@@ -52,16 +52,38 @@ class HashTable:
         Fill this in.
         '''
         idx = self._hash_mod(key)
-        pair = self.storage[idx]
+        curr = self.storage[idx]
+        prev = None
+        new = LinkedPair(key, value)
 
-        # if there's a linked list insert at the end
-        if pair == None:
-            self.storage[idx] = LinkedPair(key, value)
+        # if bucket is empty, put the pair into it
+        if curr == None:
+            self.storage[idx] = new
+        
         else:
-            while pair.next != None:
-                pair = pair.next
-            pair.next = LinkedPair(key, value)
+            while curr != None:
+                #overwrite if key is  in LL
+                if curr.key == key:
+                    # if not head
+                    if prev != None:
+                        prev.next = new
+                        new.next = curr.next
+                        break
+                    
+                    # if it is the head
+                    else:
+                        self.storage[idx] = new
+                        new.next = curr.next
+                        break
+                
+                # add to end of LL if key not present
+                elif curr.next == None:
+                    curr.next = new
+                    break
 
+                # traverse another step
+                prev = curr
+                curr = curr.next
 
 
     def remove(self, key):
@@ -86,7 +108,7 @@ class HashTable:
 
         while curr != None:
             if curr.key == key:
-                if prev != None: #
+                if prev != None: 
                     prev.next = curr.next
                     break
                 else:
@@ -95,7 +117,6 @@ class HashTable:
             
             prev = curr
             curr = curr.next
-            
 
 
     def retrieve(self, key):
@@ -107,19 +128,20 @@ class HashTable:
         Fill this in.
         '''
         idx = self._hash_mod(key)
-        pair = self.storage[idx]
+        curr = self.storage[idx]
 
-        if pair == None:
+        # return None if bucket empty
+        if curr == None:
             return None
 
-        # go to index, search through linked list for key
-        if pair.key == key:
-            return pair.value
-        while pair.next != None:
-            if pair.next.key == key:
-                return pair.next.value
-        return None
-
+        # if first element matches key, return value
+        if curr.key == key:
+            return curr.value
+        # otherwise traverse the LL and return value with matching key
+        while curr.next != None:
+            if curr.next.key == key:
+                return curr.next.value 
+            curr = curr.next    
 
 
     def resize(self):
@@ -138,6 +160,7 @@ class HashTable:
 
         # rehash key/value pairs
         for i in temp:
+            # traverse the LL and insert into new hash table
             while i != None:
                 self.insert(i.key, i.value)
                 i = i.next
