@@ -84,12 +84,14 @@ class HashTable:
         prev = None
         curr = pair
 
-        while curr:
+        while curr != None:
             if curr.key == key:
-                if prev:
+                if prev != None: #
                     prev.next = curr.next
+                    break
                 else:
                     self.storage[idx] = curr.next
+                    break
             
             prev = curr
             curr = curr.next
@@ -106,6 +108,9 @@ class HashTable:
         '''
         idx = self._hash_mod(key)
         pair = self.storage[idx]
+
+        if pair == None:
+            return None
 
         # go to index, search through linked list for key
         if pair.key == key:
